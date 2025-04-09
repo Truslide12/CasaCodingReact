@@ -1,9 +1,10 @@
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
+import { Button } from '@/components/ui/button';
 import { PlaceholderPattern } from '@/components/ui/placeholder-pattern';
 import AppLayout from '@/layouts/app-layout';
 import { type BreadcrumbItem } from '@/types';
-import { Head, usePage } from '@inertiajs/react';
-import { Eye, Link, Pencil, Trash } from 'lucide-react';
+import { Head, router, usePage } from '@inertiajs/react';
+import { CirclePlusIcon, Eye, Link, Pencil, Trash } from 'lucide-react';
 import { useEffect, useState } from 'react';
 
 const breadcrumbs: BreadcrumbItem[] = [
@@ -30,8 +31,9 @@ export default function Index({...props}: {projects: Project[]}) {
     const { projects } = props;
     const { flash } = usePage<{flash?: { success?: string; error?: string}}>().props;
     const flashMessage = flash?.success || flash?.error;
-    const [ showAlert, setShowAlert ] = useState(flashMessage ? true : false);
+    const [ showAlert, setShowAlert ] = useState(flash?.success || flash?.error ? true : false);
 
+    console.log(flashMessage, flash, showAlert)
     useEffect(() => {
         if (flashMessage) {
             const timer = setTimeout(() => setShowAlert(false), 3000);
@@ -55,9 +57,10 @@ export default function Index({...props}: {projects: Project[]}) {
                 {/* Add Product */}
                 <div className='ml-auto'>
                     <Link type='button' 
-                        className="button bg-indigo-400 rounded-lg cursor-pointer hover:opacity-90 text-md" 
+                        className="flex items-center me-2 button bg-indigo-400 rounded-lg cursor-pointer hover:opacity-90 text-md" 
                         href={route('projects.create')}
-                        >Add Project
+                        >
+                        <CirclePlusIcon></CirclePlusIcon> Add Project
                     </Link>
                 </div>
                 {/* Product List */}
@@ -79,13 +82,15 @@ export default function Index({...props}: {projects: Project[]}) {
                         </thead>
                     </table>
                     <tbody>
-                        { projects.map((project, index) => (
+                    { projects.length > 0 ? (
+                        projects.map((project, index) => (
                             <tr>
                                 <td className="border px-4 py-2 text-center">{index+1}</td>
                                 <td className="border px-4 py-2 text-center">{project.title}</td>
                                 <td className="border px-4 py-2 text-center">{project.description}</td>
                                 <td className="border px-4 py-2 text-center">{project.type}</td>
                                 <td className="border px-4 py-2 text-center">{project.image}
+                                    
                                     <img src={project.image} alt={project.title} className='h-16 w-16 object-cover' />
                                 </td>
                                 <td className="border px-4 py-2 text-center">{project.tags}</td>
@@ -96,29 +101,41 @@ export default function Index({...props}: {projects: Project[]}) {
                                     <Link                                        
                                         href={route('projects.show', project.id)}
                                         type='button'
-                                        className='ms-2 bg-sky-400 text-beige p-1 rounded-lg cursor-pointer'>
-                                            <Eye size={20} />
+                                        className='ms-2 bg-sky-400 text-beige p-2 rounded-lg cursor-pointer hover:opacity-90'>
+                                            <Eye size={18} />
                                     </Link>
                                     <Link                                        
                                         href={route('projects.edit', project.id)}
                                         type='button'
-                                        className='ms-2 bg-sky-400 text-beige p-1 rounded-lg cursor-pointer'>
-                                            <Pencil size={20} />
+                                        className='ms-2 bg-yellow-900 text-beige p-2 rounded-lg cursor-pointer hover:opacity-90'
+                                        onClick={ () => {
+                                            if(confirm('Are you sure you want to delete this project?')){
+                                                // Call the Delete Project Route
+                                                router.delete(route('projects.destroy', project.id), {
+                                                    preserveScroll: true,
+                                                    preserveState: true,
+                                                    onSuccess: () => {
+                                                        setShowAlert(true);
+                                                    },
+                                                });
+                                            }
+                                        }}
+                                        >
+                                        <Pencil size={18} />
                                     </Link>
-                                    <Link                                        
-                                        href={route('projects.destroy', project.id)}
-                                        type='button'
-                                        className='ms-2 bg-sky-400 text-beige p-1 rounded-lg cursor-pointer'>
-                                            <Trash size={20} />
-                                    </Link>
+                                    <Button                                        
+                                        className='ms-2 bg-red-800 text-beige p-2 rounded-lg cursor-pointer hover:opacity-90'>
+                                            <Trash size={18} />
+                                    </Button>
                                 </td>
                             </tr>
-                        ))}
-
+                        ))
+                        ) : (
+                            <tr>
+                                <td colSpan={10} className='text-center py-4 text-md font-bold text-red-700'>No Projects Found!</td>
+                            </tr>
+                        )}
                     </tbody>
-                </div>
-                <div className="border-sidebar-border/70 dark:border-sidebar-border relative min-h-[100vh] flex-1 overflow-hidden rounded-xl border md:min-h-min">
-                    <PlaceholderPattern className="absolute inset-0 size-full stroke-neutral-900/20 dark:stroke-neutral-100/20" />
                 </div>
             </div>
         </AppLayout>

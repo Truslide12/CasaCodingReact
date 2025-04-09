@@ -45,6 +45,9 @@ class ProjectController extends Controller
     public function store(StoreProjectRequest $request)
     {
         try {
+            // need to format these for the database, but need to add the frontend date functionality
+            // $beginDate = $request->begin;
+            // $endDate = $request->end;
             $image = null;
     
             if ($request->file('image')) {
@@ -71,7 +74,7 @@ class ProjectController extends Controller
             };
         } catch (Exception $e){
             Log::error('Project Creation Failed: ' . $e->getMessage());
-        }
+        };
     }
 
     /**
@@ -79,7 +82,10 @@ class ProjectController extends Controller
      */
     public function show(Project $project)
     {
-        //
+        return Inertia::render('projects/form', [
+            'project' => $project,
+            'isView'  => true,
+        ]);
     }
 
     /**
@@ -87,7 +93,7 @@ class ProjectController extends Controller
      */
     public function edit(Project $project)
     {
-        //
+        return Inertia::render('projects/form');
     }
 
     /**
@@ -95,7 +101,38 @@ class ProjectController extends Controller
      */
     public function update(UpdateProjectRequest $request, Project $project)
     {
-        //
+        try {
+            // need to format these for the database, but need to add the frontend date functionality
+            // $beginDate = $request->begin;
+            // $endDate = $request->end;
+
+            if ($project) {
+                $project->title         = $request->title;
+                $project->description   = $request->description;
+                $project->type          = $request->type;
+                $project->image         = $request->image;
+                $project->tags          = $request->tags;        
+                $project->begin         = $request->begin;
+                $project->end           = $request->end;
+                $project->user_id       = $request->user_id;
+
+                if ($request->file('image')) {
+                    $image = $request->file('image');
+                    $image = $image->store('projects', 'public');
+                    $project->image = $image;
+                }
+            }
+    
+            $project->save();
+    
+            if ($project) {
+                return redirect()->route('projects.index')->with('success' , 'Project successfully updated');
+            } else {
+                return redirect()->back()->with('error' , 'Project update failed!');
+            };
+        } catch (Exception $e){
+            Log::error('Project Update Failed: ' . $e->getMessage());
+        };
     }
 
     /**
@@ -103,7 +140,14 @@ class ProjectController extends Controller
      */
     public function destroy(Project $project)
     {
-        //
+        try {
+            if ($project) {
+                $project->delete(); 
+                return redirect()->back()->with('Project Successfully Deleted');
+            }
+        } catch (Exception $e) {
+            Log::error('Product deletion Failed: ' . $e->getMessage());
+        }
     }
 
         /**

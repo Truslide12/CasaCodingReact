@@ -8,24 +8,28 @@ import AppLayout from '@/layouts/app-layout';
 import { type BreadcrumbItem } from '@/types';
 import { Head } from '@inertiajs/react';
 import { useForm } from '@inertiajs/react';
-import { Link } from 'lucide-react';
+import { ArrowLeft, Link, LoaderCircle, } from 'lucide-react';
 
-const breadcrumbs: BreadcrumbItem[] = [
-    {
-        title: 'Create Project',
-        href: route('/projects/create'),
-    },
-];
+export default function Form({...props}) {
+  
+    // Form Data
+    const {project, isView, isEdit } = props;
 
-export default function Create() {
-    const { data, setData, errors, post, reset, processing } = useForm({
-        title: '',
-        description: '',
-        type: '',
+    const breadcrumbs: BreadcrumbItem[] = [
+        {
+            title: `${isView ? 'Show' : (isEdit ? 'Update' : 'Create')} Project`,
+            href: route('/projects/form'),
+        },
+    ];
+
+    const { data, setData, errors, post, put, reset, processing } = useForm({
+        title: project?.title || '',
+        description: project?.description || '',
+        type: project?.type || '',
         image: null as File|null,
-        tags: '',         
-        begin: '',
-        end: '',
+        tags: project?.tags || '',         
+        begin: project?.start || '',
+        end: project?.end || '',
         user_id: '0',
     });
 
@@ -35,14 +39,23 @@ export default function Create() {
         }
     }
     // console.log('data', data)
+
     // From Submit Handler
     function submit(e: React.FormEvent<HTMLFormElement>) {
-    e.preventDefault();
-    post(route('posts.store'), {
-        preserveScroll: true,
-        onSuccess: () => reset(),
-    });
+        e.preventDefault();
+        if (isEdit) {
+            put(route('posts.update', project.id), {
+                preserveScroll: true,
+                onSuccess: () => reset(),
+            });
+        } else {
+            post(route('posts.store'), {
+                preserveScroll: true,
+                onSuccess: () => reset(),
+            });
+        }
     }
+
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
             <Head title="Create Project" />
@@ -52,12 +65,12 @@ export default function Create() {
                         <div className='ml-auto'>
                             <Link 
                                 type="button" 
-                                className='button bg-indigo-400 rounded-lg cursor-pointer hover:opacity-90 text-md'
+                                className='flex items-center me-2 button bg-indigo-400 rounded-lg cursor-pointer hover:opacity-90 text-md'
                                 href={route('projects.index')}
-                                >Back to Products
+                                ><ArrowLeft className='me-2'></ArrowLeft>Back to Products
                             </Link>
                         </div>
-                        <CardTitle>Create Project</CardTitle>
+                        <CardTitle>{isView ? 'Show' : (isEdit ? 'Update' : 'Create')} Project</CardTitle>
                         <CardContent>
                             <form className='flex flex-col gap-4' autoComplete='off'>
                                 <div className='grid gap-6'>
@@ -73,6 +86,7 @@ export default function Create() {
                                             placeholder='Project Name'
                                             autoFocus 
                                             tabIndex={1}
+                                            disabled={isView || processing}
                                             ></Input>
                                         <InputError message={errors.title} />
                                     </div>
@@ -87,6 +101,7 @@ export default function Create() {
                                             rows={8}
                                             placeholder='Project Description'
                                             tabIndex={2}
+                                            disabled={isView || processing}
                                             ></textarea>
                                         <InputError message={errors.description} />
                                     </div>
@@ -100,7 +115,9 @@ export default function Create() {
                                             name="type" 
                                             className="
                                                 border-input
-                                                file:text-foreground">
+                                                file:text-foreground"
+                                                disabled={isView || processing}
+                                                >
                                             <option value="none">Select an Option</option>
                                             <option value="webdev">WebDev</option>
                                             <option value="sixsigma">SixSigma</option>
@@ -109,6 +126,7 @@ export default function Create() {
                                         <InputError message={errors.type} />
                                     </div>
                                     {/* Project Image */}
+                                    {(isView || isEdit) && project.image && (
                                     <div className='grid gap-2'>
                                         <Label htmlFor='image'>Image</Label>
                                         <Input
@@ -119,9 +137,16 @@ export default function Create() {
                                             placeholder='Project Image'
                                             autoFocus 
                                             tabIndex={3}
-                                            ></Input>
+                                        ></Input>
                                         <InputError message={errors.image} />
                                     </div>
+                                    )}
+                                    {isView || isEdit && (
+                                    <div className='grid gap-2'>
+                                        <Label htmlFor='image'>Current Project Image</Label>
+                                        <img src={`/images/${project.image}`} alt='{project?.title} Image' className='h-16 w-16 object-cover' />
+                                    </div>
+                                    )}
                                     {/* Project Tags */}
                                     <div className='grid gap-2'>
                                         <Label htmlFor='tags'>Tags</Label>
@@ -133,6 +158,7 @@ export default function Create() {
                                             rows={3}
                                             placeholder='Project Tags'
                                             tabIndex={4}
+                                            disabled={isView || processing}
                                             ></textarea>
                                         <InputError message={errors.tags} />
                                     </div>
@@ -148,6 +174,7 @@ export default function Create() {
                                             placeholder='Project Start'
                                             autoFocus 
                                             tabIndex={5}
+                                            disabled={isView || processing}
                                             ></Input>
                                         <InputError message={errors.begin} />
                                     </div>
@@ -163,16 +190,23 @@ export default function Create() {
                                             placeholder='Project End'
                                             autoFocus 
                                             tabIndex={6}
+                                            disabled={isView || processing}
                                             ></Input>
                                         <InputError message={errors.end} />
                                     </div>
                                     {/* Project Duration is calcualted manually in the controller */}
                                 </div>
                                 {/* Submit Form */}
-                                <Button type="submit" className="mt-4 w-fit cursor-pointer" tabIndex={4}>
-                                    {/* {processing && <LoaderCircle className="h-4 w-4 animate-spin" />} */}
-                                    Save Project
+                                {!isView && (
+                                <Button 
+                                    type="submit" 
+                                    className="mt-4 w-fit cursor-pointer" 
+                                    tabIndex={4}
+                                    >
+                                    {processing && <LoaderCircle className="h-4 w-4 animate-spin" />}
+                                    {processing ? (isEdit ? 'Updating...' : 'Creating...') : isEdit ? 'Update' : 'Create'} Project
                                 </Button>
+                                )}
                             </form>
                         </CardContent>
                     </CardHeader>
