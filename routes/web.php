@@ -17,11 +17,11 @@ Route::get('/contact', function () {
 })->name('contact');
 
 Route::get('/sixsigma', function () {
-    Route::get('/projects/sixsigma', [ProjectController::class, 'sixsigma'])->name('sixsigma'); 
+    Route::get('/sixsigma', [ProjectController::class, 'sixsigma'])->name('sixsigma'); 
 })->name('sixsigma');
 
 Route::get('/websites', function () {
-    Route::get('/projects/websites', [ProjectController::class, 'webdev'])->name('webdev');
+    Route::get('/websites', [ProjectController::class, 'websites'])->name('websites');
 })->name('websites');
 
 Route::middleware(['auth', 'verified'])->group(function () {
@@ -31,7 +31,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/projects', [ProjectController::class, 'index'])->name('projects.index');
     Route::get('/projects/create', [ProjectController::class, 'create'])->name('projects.create');
     Route::get('/projects/update', [ProjectController::class, 'update'])->name('projects.update');
-    Route::get('/projects/delete', [ProjectController::class, ''])->name('projects.delete');
+    Route::get('/projects/delete', [ProjectController::class, 'destroy'])->name('projects.delete');
 });
 
 require __DIR__.'/settings.php';

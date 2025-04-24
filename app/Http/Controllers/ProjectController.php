@@ -8,6 +8,7 @@ use App\Models\Project;
 use Exception;
 use Inertia\Inertia;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Carbon;
 
 class ProjectController extends Controller
 {
@@ -16,18 +17,23 @@ class ProjectController extends Controller
      */
     public function index()
     {
+        // Get all projects for main projects management page
         $projects = Project::latest()->get()->map(fn($project) => [
-            'title' => $project->title,
-            'description' => $project->description,
-            'type' => $project->type,
-            'image' => $project->image,
-            'tags' => $project->tags,         
-            'begin' => $project->begin->format('d M Y'),
-            'end' => $project->end->format('d M Y'),
-            'user_id' => $project->user_id,
+            'id'       => $project->id,
+            'title'         => $project->title,
+            'description'   => $project->description,
+            'type'          => $project->type,
+            'image'         => $project->image,
+            'tags'          => $project->tags,         
+            'begin'         => Carbon::createFromFormat('Y-m-d', $project->begin)->format('m/d/Y'),
+            'end'           => Carbon::createFromFormat('Y-m-d', $project->end)->format('m/d/Y'),
+            'url'           => $project->url,
+            'user_id'       => $project->user_id,
         ]);
+        
+        // dd($projects);
         return Inertia::render('projects/index', [
-            'projects' => $projects,
+            'projects'      => $projects,
         ]);
     }
 
@@ -36,6 +42,7 @@ class ProjectController extends Controller
      */
     public function create()
     {
+        // dd('on products.index');
         return Inertia::render('projects/form');
     }
 
@@ -45,28 +52,33 @@ class ProjectController extends Controller
     public function store(StoreProjectRequest $request)
     {
         try {
-            // need to format these for the database, but need to add the frontend date functionality
-            // $beginDate = $request->begin;
-            // $endDate = $request->end;
+            // Combine Begin Date Components
+            // $beginDate  = ($request->beginYear."-".$request->beginMonth."-".$request->beginDay);
+            // Combine End Date Components
+            // $endDate    = ($request->endYear."-".$request->endMonth."-".$request->endDay);
+
+            // Store Image Copy in Hard Drive
             $image = null;
-    
             if ($request->file('image')) {
                 $image = $request->file('image');
-                $imageOriginalName = $image->getClientOriginalName();
+                // $imageOriginalName = $image->getClientOriginalName(); // Do I want to keep this? Maybe for reloads... hmmm
                 $image = $image->store('projects', 'public');
             }
-    
+            
+            // Create the Project row
             $project = Project::create([
-                'title' => $request->title,
-                'description' => $request->description,
-                'type' => $request->type,
-                'image' => $request->image,
-                'tags' => $request->tags,         
-                'begin' => $request->begin,
-                'end' => $request->end,
-                'user_id' => $request->user_id,
+                'title'         => $request->title,
+                'description'   => $request->description,
+                'type'          => $request->type,
+                'image'         => $request->image,
+                'tags'          => $request->tags,         
+                'begin'         => $request->begin,
+                'end'           => $request->end,
+                'url'           => $request->url,
+                'user_id'       => $request->user_id,
             ]);
     
+            // Return to prodject.index or return to form with errors
             if ($project) {
                 return redirect()->route('projects.index')->with('success' , 'Project successfully created');
             } else {
@@ -93,7 +105,10 @@ class ProjectController extends Controller
      */
     public function edit(Project $project)
     {
-        return Inertia::render('projects/form');
+        return Inertia::render('projects/form', [
+            'project' => $project,
+            'isEdit'  => true,
+        ]);
     }
 
     /**
@@ -102,10 +117,12 @@ class ProjectController extends Controller
     public function update(UpdateProjectRequest $request, Project $project)
     {
         try {
-            // need to format these for the database, but need to add the frontend date functionality
-            // $beginDate = $request->begin;
-            // $endDate = $request->end;
+            // Combine Begin Date Components
+            // $beginDate  = ($request->beginYear."-".$request->beginMonth."-".$request->beginDay);
+            // Combine End Date Components
+            // $endDate    = ($request->endYear."-".$request->endMonth."-".$request->endDay);
 
+            // Store appropriate changes to be saved in $project variable
             if ($project) {
                 $project->title         = $request->title;
                 $project->description   = $request->description;
@@ -114,17 +131,19 @@ class ProjectController extends Controller
                 $project->tags          = $request->tags;        
                 $project->begin         = $request->begin;
                 $project->end           = $request->end;
+                $project->url           = $request->url;
                 $project->user_id       = $request->user_id;
 
                 if ($request->file('image')) {
-                    $image = $request->file('image');
-                    $image = $image->store('projects', 'public');
+                    $image          = $request->file('image');
+                    $image          = $image->store('projects', 'public');
                     $project->image = $image;
                 }
             }
-    
+            // Save Updates
             $project->save();
-    
+            
+            // Handle post-Update actions and errors
             if ($project) {
                 return redirect()->route('projects.index')->with('success' , 'Project successfully updated');
             } else {
@@ -156,7 +175,7 @@ class ProjectController extends Controller
     public function sixsigma(Project $project)
     {
         $projects = Project::where('type', 'like', 'sixsigma')->orderBy('date', 'Desc')->get();
-        return Inertia::render('projects/sixsigma', [
+        return Inertia::render('sixsigma', [
             $projects => $projects,
         ]);
     }    
@@ -164,10 +183,10 @@ class ProjectController extends Controller
     /**
     * Remove the specified resource from storage.
     */
-   public function webdev(Project $project)
+   public function websites(Project $project)
    {
     $projects = Project::where('type', 'like', 'webdev')->orderBy('date', 'Desc')->get();
-    return Inertia::render('projects/webdev', [
+    return Inertia::render('websites', [
         $projects => $projects,
     ]);
    }

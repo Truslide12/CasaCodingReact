@@ -9,18 +9,13 @@ import AppLogo from './app-logo';
 
 const mainNavItems: NavItem[] = [
     {
-        title: 'About',
-        href: '/about',
-        icon: LayoutGrid,
-    },
-    {
         title: 'Websites',
         href: '/websites',
         icon: Globe,
     },
     {
         title: 'Projects',
-        href: '/projects',
+        href: '/sixsigma',
         icon: FolderKanban,
     },
     {
@@ -50,7 +45,7 @@ export function AppSidebar() {
                 <SidebarMenu>
                     <SidebarMenuItem>
                         <SidebarMenuButton size="lg" asChild>
-                            <Link href="/dashboard" prefetch>
+                            <Link href="/" prefetch>
                                 <AppLogo />
                             </Link>
                         </SidebarMenuButton>

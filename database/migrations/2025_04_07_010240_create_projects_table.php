@@ -20,7 +20,9 @@ return new class extends Migration
             $table->string('tags')->nullable();
             $table->date('begin');
             $table->date('end');
-            $table->foreignId('user_id')->constrained()->onDelete('casade');
+            $table->string('url');
+            $table->bigInteger('user_id')->unsigned()->index();
+            $table->foreign('user_id')->references('id')->on('users');
             $table->timestamps();
         });
     }

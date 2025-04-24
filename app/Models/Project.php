@@ -18,6 +18,7 @@ class Project extends Model
         'tags',         
         'begin',
         'end',
+        'url',
         'user_id',
     ];
 

@@ -80,12 +80,12 @@
 :root {
     --background: beige;
     --foreground: #6B25C7;
-    --card: #6B25C7;
+    --card: beige;
     --card-foreground: oklch(0.145 0 0);
     --popover: oklch(1 0 0);
     --popover-foreground: oklch(0.145 0 0);
-    --primary: oklch(0.205 0 0);
-    --primary-foreground: oklch(0.985 0 0);
+    --primary: indigo;
+    --primary-foreground: beige;
     --secondary: oklch(0.97 0 0);
     --secondary-foreground: oklch(0.205 0 0);
     --muted: oklch(0.97 0 0);
@@ -105,12 +105,13 @@
     --radius: 0.625rem;
     --sidebar: beige;
     --sidebar-foreground: #6B25C7;
-    --sidebar-primary: red;
+    --sidebar-primary: #6B25C7;
     --sidebar-primary-foreground: beige;
     --sidebar-accent: slateblue;
     --sidebar-accent-foreground: oklch(0.205 0 0);
     --sidebar-border: slateblue;
     --sidebar-ring: oklch(0.87 0 0);
+    --button: indigo;
 }
 
 .dark {

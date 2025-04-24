@@ -29,6 +29,7 @@ class StoreProjectRequest extends FormRequest
             'tags'          => 'required|string|max:255',         
             'begin'         => 'required|date',
             'end'           => 'required|date',
+            'url'           => 'nullable|url',
             'user_id'       => 'required|integer',
         ];
     }
@@ -56,6 +57,7 @@ class StoreProjectRequest extends FormRequest
             'end.required'    => 'The Project end date is required.',
             'end.string'      => 'The Project end date must be a string.',
             'end.max'    => 'The Project end date may not be larger than 255 characters.',
+            'url.url'             => 'The Project URL must be valid.',
             'user_id.required'    => 'The Project user_id is required.',
             'user_id.string'      => 'The Project user_id must be an integer.',
         ];
