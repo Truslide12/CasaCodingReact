@@ -12,9 +12,9 @@ import { ArrowLeft, Link, LoaderCircle, LucideCalendar, Calendar} from 'lucide-r
 import React, { useState } from "react";
 import { cn } from "@/lib/utils"
 
-export default function Form({...props}) {
+export default function Form({project, ...props}) {
     // Form Data
-    const {project, isView, isEdit } = props;
+    const {isView, isEdit } = props;
 
     
     const { data, setData, errors, post, put, reset, processing } = useForm({
@@ -71,7 +71,7 @@ export default function Form({...props}) {
                             <div className='grid gap-2'>
                                 <Label htmlFor='title'>Title</Label>
                                 <Input
-                                    value={data.title}
+                                    value={project.title}
                                     onChange={(e) => setData('title', e.target.value)}
                                     id='title'
                                     name='title'
@@ -87,7 +87,7 @@ export default function Form({...props}) {
                             <div className='grid gap-2'>
                                 <Label htmlFor='description'>Description</Label>
                                 <textarea
-                                    value={data.description}
+                                    value={project.description}
                                     className={cn(
                                             "border-input file:text-foreground placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground flex h-9 w-full min-w-0 rounded-md border bg-transparent px-3 py-1 text-base shadow-xs transition-[color,box-shadow] outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm",
                                             "focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px]",
@@ -107,7 +107,7 @@ export default function Form({...props}) {
                             <div className='grid gap-2'>
                                 <Label htmlFor='Type'>Type</Label>
                                 <select 
-                                    value={data.type}
+                                    value={project.type}
                                     onChange={(e) => setData('type', e.target.value)}                                        
                                     id="type" 
                                     name="type" 

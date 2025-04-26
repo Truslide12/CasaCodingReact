@@ -10,7 +10,7 @@ import { useEffect, useState } from 'react';
 const breadcrumbs: BreadcrumbItem[] = [
     {
         title: 'Projects List',
-        href: route('/projects/index'),
+        href: route('/projects'),
     },
 ];
 
@@ -27,7 +27,7 @@ interface Project {
     user_id: number,
     
 }
-export default function Index({...props}: {projects: Project[]}) {
+export default function Projects({...props}: {projects: Project[]}) {
     
     const { projects } = props;
     const { flash } = usePage<{flash?: { success?: string; error?: string}}>().props;

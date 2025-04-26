@@ -94,6 +94,7 @@ class ProjectController extends Controller
      */
     public function show(Project $project)
     {
+        // dd($project);
         return Inertia::render('projects/form', [
             'project' => $project,
             'isView'  => true,
