@@ -16,15 +16,15 @@ export default function Form({...props}) {
     const {isView, isEdit, project} = usePage().props;;
     
     const { data, setData, errors, post, put, reset, processing } = useForm({
-        'project.title': project?.title || '',
-        'project.description': project?.description || '',
-        'project.type': project?.type || '',
-        'project.image': project?.image || (null as File|null),
-        'project.tags': project?.tags || '',         
-        'project.begin': project?.start || '',
-        'project.end': project?.end || '',
-        'project.url': project?.url || '',
-        'project.user_id': project?.user_id || '',
+        title: project?.title || '',
+        description: project?.description || '',
+        type: project?.type || '',
+        image: project?.image || (null as File|null),
+        tags: project?.tags || '',         
+        begin: project?.start || '',
+        end: project?.end || '',
+        url: project?.url || '',
+        user_id: project?.user_id || '',
     });
 
     // Handle Image File Upload
@@ -38,7 +38,7 @@ export default function Form({...props}) {
     // From Submit Handler
     function submit(e: React.FormEvent<HTMLFormElement>) {
         e.preventDefault();
-        console.log('submit pressed');
+        console.log(project);
         // if (isEdit) {
         //     put(route('posts.update', project.id), {
         //         preserveScroll: true,
@@ -70,9 +70,9 @@ export default function Form({...props}) {
                         <div className='grid gap-6'>
                             {/* Project Title */}
                             <div className='grid gap-2'>
-                                <Label htmlFor='project.title'>Title</Label>
+                                <Label htmlFor='title'>Title</Label>
                                 <Input
-                                    value={project.title}
+                                    value={project?.title}
                                     onChange={(e) => setData('project.title', e.target.value)}
                                     id='title'
                                     name='title'
@@ -86,7 +86,7 @@ export default function Form({...props}) {
                             </div>
                             {/* Project Description */}
                             <div className='grid gap-2'>
-                                <Label htmlFor='project.description'>Description</Label>
+                                <Label htmlFor='description'>Description</Label>
                                 <textarea
                                     value={project?.description}
                                     className={cn(
@@ -106,10 +106,10 @@ export default function Form({...props}) {
                             </div>
                             {/* Project Type */}
                             <div className='grid gap-2'>
-                                <Label htmlFor='project.type'>Type</Label>
+                                <Label htmlFor='Type'>Type</Label>
                                 <select 
                                     value={project?.type}
-                                    onChange={(e) => setData('project.type', e.target.value)}                                        
+                                    onChange={(e) => setData('type', e.target.value)}                                        
                                     id="type" 
                                     name="type" 
                                     className={cn(
@@ -128,12 +128,13 @@ export default function Form({...props}) {
                             </div>
                             {/* Project Image */}
                             {(isView || isEdit) && project.image && (
+
                             <div className='grid gap-2'>
                                 <Label htmlFor='image'>Current Project Image</Label>
                                 <img src={`/images/${project.image}`} alt='{project.title} Image' className='h-16 w-16 object-cover' />
                             </div>
                             )}
-                            {(project!.image || isEdit) && (
+                            { (
                             <div className='grid gap-2'>
                                 <Label htmlFor='image'>Image</Label>
                                 <Input
@@ -154,8 +155,8 @@ export default function Form({...props}) {
                                 <textarea
                                     id='tags'
                                     name='tags'
-                                    value={project?.tags || ''}
-                                    onChange={(e) => setData('tags', e.target.value)}  
+                                    value={project?.tags}
+                                    onChange={(e) => setData('project.tags', e.target.value)}  
                                     rows={3}
                                     placeholder='Project Tags'
                                     tabIndex={4}
@@ -172,8 +173,8 @@ export default function Form({...props}) {
                                 <Input
                                 id='begin'
                                 name='begin'
-                                value={project?.begin || ''}
-                                onChange={(e) => setData('begin', e.target.value)}  
+                                value={project?.begin}
+                                onChange={(e) => setData('project.begin', e.target.value)}  
                                 type='text'
                                 placeholder='Project Start Date YYYY/MM/DD'
                                 autoFocus 
@@ -185,8 +186,8 @@ export default function Form({...props}) {
                                 <Input
                                 id='end'
                                 name='end'
-                                value={project?.end || ''}
-                                onChange={(e) => setData('end', e.target.value)}  
+                                value={project?.end}
+                                onChange={(e) => setData('project.end', e.target.value)}  
                                 type='text'
                                 placeholder='Project End Date YYYY/MM/DD'
                                 autoFocus 
@@ -199,8 +200,8 @@ export default function Form({...props}) {
                                 id='url'
                                 name='url'
                                 type='text'
-                                value={project?.url || ''}
-                                onChange={(e) => setData('url', e.target.value)}  
+                                value={project?.url}
+                                onChange={(e) => setData('project.url', e.target.value)}  
                                 placeholder='Project URL'
                                 autoFocus 
                                 tabIndex={6}
