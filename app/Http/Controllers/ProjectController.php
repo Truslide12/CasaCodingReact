@@ -43,7 +43,10 @@ class ProjectController extends Controller
     public function create()
     {
         // dd('on products.index');
-        return Inertia::render('projects/form');
+        return Inertia::render('projects/form', [
+            'isView'  => false,
+            'isEdit'  => false,
+        ]);
     }
 
     /**
@@ -98,6 +101,7 @@ class ProjectController extends Controller
         return Inertia::render('projects/form', [
             'project' => $project,
             'isView'  => true,
+            'isEdit'  => false,
         ]);
     }
 
@@ -108,6 +112,7 @@ class ProjectController extends Controller
     {
         return Inertia::render('projects/form', [
             'project' => $project,
+            'isView'  => false,
             'isEdit'  => true,
         ]);
     }

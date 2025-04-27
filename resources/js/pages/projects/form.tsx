@@ -3,30 +3,28 @@ import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import InputError from '@/components/input-error';
-import { PlaceholderPattern } from '@/components/ui/placeholder-pattern';
 import AppLayout from '@/layouts/app-layout';
 import { type BreadcrumbItem } from '@/types';
 import { Head } from '@inertiajs/react';
-import { useForm } from '@inertiajs/react';
+import { useForm, usePage } from '@inertiajs/react';
 import { ArrowLeft, Link, LoaderCircle, LucideCalendar, Calendar} from 'lucide-react';
 import React, { useState } from "react";
 import { cn } from "@/lib/utils"
 
-export default function Form({project, ...props}) {
+export default function Form({...props}) {
     // Form Data
-    const {isView, isEdit } = props;
-
+    const {isView, isEdit, project} = usePage().props;;
     
     const { data, setData, errors, post, put, reset, processing } = useForm({
-        title: project?.title || '',
-        description: project?.description || '',
-        type: project?.type || '',
-        image: null as File|null,
-        tags: project?.tags || '',         
-        begin: project?.start || '',
-        end: project?.end || '',
-        url: project?.url || '',
-        user_id: project?.url || '',
+        'project.title': project?.title || '',
+        'project.description': project?.description || '',
+        'project.type': project?.type || '',
+        'project.image': project?.image || (null as File|null),
+        'project.tags': project?.tags || '',         
+        'project.begin': project?.start || '',
+        'project.end': project?.end || '',
+        'project.url': project?.url || '',
+        'project.user_id': project?.user_id || '',
     });
 
     // Handle Image File Upload
@@ -34,21 +32,24 @@ export default function Form({project, ...props}) {
         if(e.target.files && e.target.files.length > 0) {
             setData('image', e.target.files[0])
         }
+        console.log(project);
     }
+
     // From Submit Handler
     function submit(e: React.FormEvent<HTMLFormElement>) {
         e.preventDefault();
-        if (isEdit) {
-            put(route('posts.update', project.id), {
-                preserveScroll: true,
-                onSuccess: () => reset(),
-            });
-        } else {
-            post(route('posts.store'), {
-                preserveScroll: true,
-                onSuccess: () => reset(),
-            });
-        }
+        console.log('submit pressed');
+        // if (isEdit) {
+        //     put(route('posts.update', project.id), {
+        //         preserveScroll: true,
+        //         onSuccess: () => reset(),
+        //     });
+        // } else {
+        //     post(route('posts.store'), {
+        //         preserveScroll: true,
+        //         onSuccess: () => reset(),
+        //     });
+        // }
     }
 
     return (
@@ -59,7 +60,7 @@ export default function Form({project, ...props}) {
                 <a  
                     type="button" 
                     className='flex items-center me-2 button bg-indigo-400 rounded-lg cursor-pointer hover:opacity-90 text-md'
-                    href={route('projects.index')}
+                    href={route('dashboard')}
                     ><ArrowLeft className='me-2'></ArrowLeft>Back to Products
                 </a>
                 </div>
@@ -69,10 +70,10 @@ export default function Form({project, ...props}) {
                         <div className='grid gap-6'>
                             {/* Project Title */}
                             <div className='grid gap-2'>
-                                <Label htmlFor='title'>Title</Label>
+                                <Label htmlFor='project.title'>Title</Label>
                                 <Input
                                     value={project.title}
-                                    onChange={(e) => setData('title', e.target.value)}
+                                    onChange={(e) => setData('project.title', e.target.value)}
                                     id='title'
                                     name='title'
                                     type='text'
@@ -85,15 +86,15 @@ export default function Form({project, ...props}) {
                             </div>
                             {/* Project Description */}
                             <div className='grid gap-2'>
-                                <Label htmlFor='description'>Description</Label>
+                                <Label htmlFor='project.description'>Description</Label>
                                 <textarea
-                                    value={project.description}
+                                    value={project?.description}
                                     className={cn(
                                             "border-input file:text-foreground placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground flex h-9 w-full min-w-0 rounded-md border bg-transparent px-3 py-1 text-base shadow-xs transition-[color,box-shadow] outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm",
                                             "focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px]",
                                             "aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive",
                                           )}
-                                    onChange={(e) => setData('description', e.target.value)}
+                                    onChange={(e) => setData('project.description', e.target.value)}
                                     id='description'
                                     name='description'
                                     rows={8}
@@ -105,10 +106,10 @@ export default function Form({project, ...props}) {
                             </div>
                             {/* Project Type */}
                             <div className='grid gap-2'>
-                                <Label htmlFor='Type'>Type</Label>
+                                <Label htmlFor='project.type'>Type</Label>
                                 <select 
-                                    value={project.type}
-                                    onChange={(e) => setData('type', e.target.value)}                                        
+                                    value={project?.type}
+                                    onChange={(e) => setData('project.type', e.target.value)}                                        
                                     id="type" 
                                     name="type" 
                                     className={cn(
@@ -116,9 +117,9 @@ export default function Form({project, ...props}) {
                                         "focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px]",
                                         "aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive",
                                       )}
-                                        disabled={isView || processing}
+                                    disabled={isView || processing}
                                         >
-                                    <option value="none">Select an Option</option>
+                                    <option value="">Select an Option</option>
                                     <option value="webdev">WebDev</option>
                                     <option value="sixsigma">SixSigma</option>
                                     <option value="other">Other</option>
@@ -127,6 +128,12 @@ export default function Form({project, ...props}) {
                             </div>
                             {/* Project Image */}
                             {(isView || isEdit) && project.image && (
+                            <div className='grid gap-2'>
+                                <Label htmlFor='image'>Current Project Image</Label>
+                                <img src={`/images/${project.image}`} alt='{project.title} Image' className='h-16 w-16 object-cover' />
+                            </div>
+                            )}
+                            {(project!.image || isEdit) && (
                             <div className='grid gap-2'>
                                 <Label htmlFor='image'>Image</Label>
                                 <Input
@@ -141,18 +148,14 @@ export default function Form({project, ...props}) {
                                 <InputError message={errors.image} />
                             </div>
                             )}
-                            {isView || isEdit && (
-                            <div className='grid gap-2'>
-                                <Label htmlFor='image'>Current Project Image</Label>
-                                <img src={`/images/${project.image}`} alt='{project?.title} Image' className='h-16 w-16 object-cover' />
-                            </div>
-                            )}
                             {/* Project Tags */}
                             <div className='grid gap-2'>
                                 <Label htmlFor='tags'>Tags</Label>
                                 <textarea
                                     id='tags'
                                     name='tags'
+                                    value={project?.tags || ''}
+                                    onChange={(e) => setData('tags', e.target.value)}  
                                     rows={3}
                                     placeholder='Project Tags'
                                     tabIndex={4}
@@ -169,6 +172,8 @@ export default function Form({project, ...props}) {
                                 <Input
                                 id='begin'
                                 name='begin'
+                                value={project?.begin || ''}
+                                onChange={(e) => setData('begin', e.target.value)}  
                                 type='text'
                                 placeholder='Project Start Date YYYY/MM/DD'
                                 autoFocus 
@@ -180,6 +185,8 @@ export default function Form({project, ...props}) {
                                 <Input
                                 id='end'
                                 name='end'
+                                value={project?.end || ''}
+                                onChange={(e) => setData('end', e.target.value)}  
                                 type='text'
                                 placeholder='Project End Date YYYY/MM/DD'
                                 autoFocus 
@@ -192,6 +199,8 @@ export default function Form({project, ...props}) {
                                 id='url'
                                 name='url'
                                 type='text'
+                                value={project?.url || ''}
+                                onChange={(e) => setData('url', e.target.value)}  
                                 placeholder='Project URL'
                                 autoFocus 
                                 tabIndex={6}

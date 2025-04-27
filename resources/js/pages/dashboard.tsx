@@ -51,7 +51,7 @@ export default function Dashboard( {projects, ...props} ) {
                         className="button flex items-center me-2 button bg-indigo-400 rounded-lg cursor-pointer hover:opacity-90 text-sm" 
                         href={route('projects.create')}
                         >
-                        <CirclePlusIcon size={18} /> Add Project  
+                        <CirclePlusIcon size={24} /><h2> Add Project</h2>  
                     </a>
                 </div>
                 <div className="border-sidebar-border/70 dark:border-sidebar-border relative min-h-[100vh] flex-1 overflow-hidden rounded-xl border md:min-h-min">
