@@ -8,37 +8,82 @@ import { type BreadcrumbItem } from '@/types';
 import { Head } from '@inertiajs/react';
 import { useForm, usePage } from '@inertiajs/react';
 import { ArrowLeft, Link, LoaderCircle, LucideCalendar, Calendar} from 'lucide-react';
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { cn } from "@/lib/utils"
+
+interface Project {
+    id: number,
+    title: string,
+    description: string,
+    type: string,
+    image: string,
+    tags: string,
+    begin: string,
+    end: string,
+    url: string,
+    user_id: number,  
+}
 
 export default function Form({...props}) {
     // Form Data
-    const {isView, isEdit, project} = usePage().props;;
-    
-    const { data, setData, errors, post, put, reset, processing } = useForm({
-        title: project?.title || '',
-        description: project?.description || '',
-        type: project?.type || '',
-        image: project?.image || (null as File|null),
-        tags: project?.tags || '',         
-        begin: project?.start || '',
-        end: project?.end || '',
-        url: project?.url || '',
-        user_id: project?.user_id || '',
-    });
+    const {isView, isEdit, project} = usePage().props;
 
+    // console.log(project);
+    const { data, setData, errors, post, put, reset, processing } = useForm({
+        id: '',
+        title: '',
+        description: '',
+        type: '',
+        image: '',
+        tags: '',         
+        begin: '',
+        end: '',
+        url: '',
+        user_id: '',
+    });
+    // console.log('data', data);
+
+    useEffect(() => {
+        if(project) {
+            setData({
+                id: project.id,
+                title: project.title,
+                description: project.description,
+                type: project.type,
+                image: project.image,
+                tags: project.tags,         
+                begin: project.start,
+                end: project.end,
+                url: project.url,
+                user_id: project.user_id,
+            })
+        } else {(
+            setData({
+                id: '',
+                title: '',
+                description: '',
+                type: '',
+                image: '',
+                tags: '',         
+                begin: '',
+                end: '',
+                url: '',
+                user_id: '',
+            })
+        )}
+    }, [project]);
     // Handle Image File Upload
     const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
         if(e.target.files && e.target.files.length > 0) {
             setData('image', e.target.files[0])
         }
-        console.log(project);
+        // console.log(project);
     }
 
     // From Submit Handler
-    function submit(e: React.FormEvent<HTMLFormElement>) {
+    function handleSubmit (e: React.FormEvent<HTMLFormElement>) {
         e.preventDefault();
-        console.log(project);
+        console.log(data);
         // if (isEdit) {
         //     put(route('posts.update', project.id), {
         //         preserveScroll: true,
@@ -66,14 +111,21 @@ export default function Form({...props}) {
                 </div>
 
                 <h2>Project Form</h2>
-                    <form className='flex flex-col gap-4' autoComplete='off'>
+                    <form 
+                        className='flex flex-col gap-4' 
+                        autoComplete='off'
+                        onSubmit={e => {
+                            handleSubmit(e);
+                        }}
+                        >
+                             {/* action="{{ route('products.update',$product->id) }}" method="POST" */}
                         <div className='grid gap-6'>
                             {/* Project Title */}
                             <div className='grid gap-2'>
                                 <Label htmlFor='title'>Title</Label>
                                 <Input
-                                    value={project?.title}
-                                    onChange={(e) => setData('project.title', e.target.value)}
+                                    value={project.title}
+                                    onChange={(e) => setData('title', e.target.value)}
                                     id='title'
                                     name='title'
                                     type='text'
@@ -94,7 +146,7 @@ export default function Form({...props}) {
                                             "focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px]",
                                             "aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive",
                                           )}
-                                    onChange={(e) => setData('project.description', e.target.value)}
+                                    onChange={(e) => setData('description', e.target.value)}
                                     id='description'
                                     name='description'
                                     rows={8}
@@ -156,7 +208,7 @@ export default function Form({...props}) {
                                     id='tags'
                                     name='tags'
                                     value={project?.tags}
-                                    onChange={(e) => setData('project.tags', e.target.value)}  
+                                    onChange={(e) => setData('tags', e.target.value)}  
                                     rows={3}
                                     placeholder='Project Tags'
                                     tabIndex={4}
@@ -174,7 +226,7 @@ export default function Form({...props}) {
                                 id='begin'
                                 name='begin'
                                 value={project?.begin}
-                                onChange={(e) => setData('project.begin', e.target.value)}  
+                                onChange={(e) => setData('begin', e.target.value)}  
                                 type='text'
                                 placeholder='Project Start Date YYYY/MM/DD'
                                 autoFocus 
@@ -187,7 +239,7 @@ export default function Form({...props}) {
                                 id='end'
                                 name='end'
                                 value={project?.end}
-                                onChange={(e) => setData('project.end', e.target.value)}  
+                                onChange={(e) => setData('end', e.target.value)}  
                                 type='text'
                                 placeholder='Project End Date YYYY/MM/DD'
                                 autoFocus 
@@ -201,7 +253,7 @@ export default function Form({...props}) {
                                 name='url'
                                 type='text'
                                 value={project?.url}
-                                onChange={(e) => setData('project.url', e.target.value)}  
+                                onChange={(e) => setData('url', e.target.value)}  
                                 placeholder='Project URL'
                                 autoFocus 
                                 tabIndex={6}
